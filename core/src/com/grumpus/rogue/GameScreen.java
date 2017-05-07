@@ -6,10 +6,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.grumpus.rogue.actions.Action;
+import com.grumpus.rogue.actions.Actor;
 import com.grumpus.rogue.actions.WalkAction;
 
 import java.util.ArrayList;
@@ -23,8 +25,10 @@ public class GameScreen implements Screen {
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
 
-    private Actor player;
+    private TiledMapTileLayer solidLayer;
+
     private ArrayList<Actor> actors;
+    private Actor player;
 
     public GameScreen(RogueGame game) {
         this.game = game;
@@ -38,6 +42,9 @@ public class GameScreen implements Screen {
         map = mapLoader.load("test.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map);
 
+        // load map layers
+         solidLayer = (TiledMapTileLayer)map.getLayers().get("solid");
+
         // for now, hardcode an actor
         actors = new ArrayList<Actor>();
         player = new Actor(game, 1, 1, 4, 2);
@@ -45,15 +52,32 @@ public class GameScreen implements Screen {
     }
 
     public void processInput() {
-        // move the player around
+        // get direction from key presses
+        int xDir = 0;
+        int yDir = 0;
         if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            player.setAction(new WalkAction(player, -1, 0));
+            xDir = -1;
+            yDir = 0;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            player.setAction(new WalkAction(player, 1, 0));
+            xDir = 1;
+            yDir = 0;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-            player.setAction(new WalkAction(player, 0, -1));
+            xDir = 0;
+            yDir = -1;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            player.setAction(new WalkAction(player, 0, 1));
+            xDir = 0;
+            yDir = 1;
+        }
+
+        // get target tile from map
+        TiledMapTileLayer.Cell targetCell = solidLayer.getCell(
+                player.getTileX() + xDir,
+                player.getTileY() + yDir
+        );
+        if (targetCell != null) {
+            // there's a wall here! can't move
+        } else {
+            player.setAction(new WalkAction(player, xDir, yDir));
         }
     }
 

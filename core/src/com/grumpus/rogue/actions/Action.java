@@ -1,7 +1,5 @@
 package com.grumpus.rogue.actions;
 
-import com.grumpus.rogue.Actor;
-
 public abstract class Action {
 
     protected Actor actor;

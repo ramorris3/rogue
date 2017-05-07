@@ -1,7 +1,5 @@
 package com.grumpus.rogue.actions;
 
-import com.badlogic.gdx.Gdx;
-import com.grumpus.rogue.Actor;
 import com.grumpus.rogue.RogueGame;
 
 public class WalkAction extends Action {
@@ -19,7 +17,6 @@ public class WalkAction extends Action {
     public void execute() {
         actor.x += dirX * RogueGame.TILE_SIZE;
         actor.y += dirY * RogueGame.TILE_SIZE;
-        Gdx.app.debug(this.getClass().getSimpleName(), "Just walked.");
     }
 
 }

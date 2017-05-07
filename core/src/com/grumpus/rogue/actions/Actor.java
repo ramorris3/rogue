@@ -1,7 +1,7 @@
-package com.grumpus.rogue;
+package com.grumpus.rogue.actions;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.grumpus.rogue.actions.Action;
+import com.grumpus.rogue.RogueGame;
 
 public class Actor {
 
@@ -12,14 +12,22 @@ public class Actor {
 
     private Action action;
 
-    public Actor(RogueGame game, int tileX, int tileY, int regionTileX, int regionTileY) {
+    public Actor(RogueGame game, int gridX, int gridY, int tileX, int tileY) {
         this.game = game;
         textureRegion = new TextureRegion(game.tileset,
-                regionTileX * RogueGame.TILE_SIZE,
-                regionTileY * RogueGame.TILE_SIZE,
+                tileX * RogueGame.TILE_SIZE,
+                tileY * RogueGame.TILE_SIZE,
                 RogueGame.TILE_SIZE, RogueGame.TILE_SIZE);
-        this.x = tileX * RogueGame.TILE_SIZE;
-        this.y = tileY * RogueGame.TILE_SIZE;
+        this.x = gridX * RogueGame.TILE_SIZE;
+        this.y = gridY * RogueGame.TILE_SIZE;
+    }
+
+    public int getTileX() {
+        return x / RogueGame.TILE_SIZE;
+    }
+
+    public int getTileY() {
+        return y / RogueGame.TILE_SIZE;
     }
 
     public Action getAction() {

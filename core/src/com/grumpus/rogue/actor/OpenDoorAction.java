@@ -18,7 +18,7 @@ public class OpenDoorAction extends Action {
 
     @Override
     public void execute() {
-        // delete door cell from door layer at position tile position (tx, ty)
+        // delete door from door layer at tile position (tx, ty)
         stage.setTextureRegion("door", tx, ty, null);
 
         // set bg tile at (tx, ty) to open door texture region

@@ -41,7 +41,7 @@ public class GameScreen implements Screen {
         actors.add(player);
     }
 
-    public Action processInput() {
+    private Action processInput() {
         // get direction from key presses
         int xDir = 0;
         int yDir = 0;
@@ -80,16 +80,15 @@ public class GameScreen implements Screen {
         return null;
     }
 
-    public void updateActors(float delta) {
-        for (int i = 0; i < actors.size(); i++) {
+    private void updateActors(float delta) {
+        for (Actor actor : actors ) {
             // get action for actor
-            Actor currentActor = actors.get(i);
-            Action currentAction = currentActor.getAction();
+            Action currentAction = actor.getAction();
 
             // consume action, remove from actor
             if (currentAction != null) {
                 currentAction.execute();
-                currentActor.setAction(null);
+                actor.setAction(null);
             }
 
         }
@@ -118,8 +117,8 @@ public class GameScreen implements Screen {
         stage.draw();
 
         // draw all actors
-        for (int i = 0; i < actors.size(); i++) {
-            actors.get(i).draw(delta);
+        for (Actor actor : actors) {
+            actor.draw(delta);
         }
 
         RogueGame.batch.end();

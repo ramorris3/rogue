@@ -17,6 +17,6 @@ public class DesktopLauncher {
 
 		Gdx.app = new LwjglApplication(new RogueGame(), config);
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
-
+//		Gdx.app.setLogLevel(Application.LOG_ERROR);
 	}
 }

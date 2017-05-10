@@ -24,7 +24,14 @@ public class Stage {
 
     public Stage(TiledMap map) {
         layers = new LinkedHashMap<String, TextureRegion[][]>();
+        loadMap(map);
+    }
 
+    /**
+     * Generates the stage's layers from a {@link TiledMap}.
+     * @param map The {@link TiledMap} to load.
+     */
+    private void loadMap(TiledMap map) {
         // get width and height (in tiles) from the map
         MapProperties props = map.getProperties();
         width = props.get("width", Integer.class);
@@ -54,7 +61,7 @@ public class Stage {
         try {
             return layers.get(layerName)[tx][ty];
         } catch (NullPointerException e) {
-            Gdx.app.log(TAG, "There is no layer named: " + layerName + ".  Nothing returned.");
+            Gdx.app.log(TAG, "WARNING! There is no layer named \"" + layerName + "\"");
             return null;
         }
     }
@@ -63,11 +70,18 @@ public class Stage {
         try {
             layers.get(layerName)[tx][ty] = textureRegion;
         } catch (NullPointerException e) {
-            Gdx.app.log(TAG, "There is no layer named: " + layerName + ".  Nothing set.");
+            Gdx.app.log(TAG, "WARNING! There is no layer named: \"" + layerName + "\"");
         }
     }
 
-    public boolean isLayer(String layerName, int tx, int ty) {
+    /**
+     * Check if the specified layer has a non-empty tile at the given tile coordinates.
+     * @param layerName The name of the layer, i.e. "solid", "door", etc.
+     * @param tx The tile-x position to check.
+     * @param ty The tile-y position to check.
+     * @return
+     */
+    public boolean isLayerAt(String layerName, int tx, int ty) {
         return getTextureRegion(layerName, tx, ty) != null;
     }
 

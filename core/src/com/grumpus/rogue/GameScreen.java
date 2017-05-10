@@ -65,13 +65,13 @@ public class GameScreen implements Screen {
 
 
         // first, check if there's a door there
-        if (stage.isLayer("door", tx, ty)) {
+        if (stage.isLayerAt("door", tx, ty)) {
             // there's a door here, so return an open-door action
             return new OpenDoorAction(stage, tx, ty);
         }
 
         // now, check for solids here
-        if (!stage.isLayer("solid", tx, ty)) {
+        if (!stage.isLayerAt("solid", tx, ty)) {
             // there's no solid here, so player can move
             return new WalkAction(player, xDir, yDir);
         }

@@ -1,6 +1,4 @@
-package com.grumpus.rogue.actions;
-
-import com.grumpus.rogue.RogueGame;
+package com.grumpus.rogue.actor;
 
 public class WalkAction extends Action {
 
@@ -15,8 +13,8 @@ public class WalkAction extends Action {
 
     @Override
     public void execute() {
-        actor.x += dirX * RogueGame.TILE_SIZE;
-        actor.y += dirY * RogueGame.TILE_SIZE;
+        actor.setTileX(actor.getTileX() + dirX);
+        actor.setTileY(actor.getTileY() + dirY);
     }
 
 }

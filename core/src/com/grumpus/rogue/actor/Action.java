@@ -1,4 +1,4 @@
-package com.grumpus.rogue.actions;
+package com.grumpus.rogue.actor;
 
 public abstract class Action {
 

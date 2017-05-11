@@ -35,9 +35,9 @@ public class GameScreen implements Screen {
         TiledMap map = mapLoader.load("test.tmx");
         stage = new Stage(map);
 
-        // for now, hardcode an actor
+        // for now, hardcode a player's position
         actors = new ArrayList<Actor>();
-        player = new Actor(1, 1, 4, 2);
+        player = new Actor("player", 1, 1);
         actors.add(player);
     }
 
@@ -120,6 +120,11 @@ public class GameScreen implements Screen {
         for (Actor actor : actors) {
             actor.draw(delta);
         }
+
+        // draw UI
+        RogueGame.font.draw(RogueGame.batch,
+                "HP: " + player.hp + "/" + player.maxHp,
+                0, RogueGame.VIEW_HEIGHT - 5);
 
         RogueGame.batch.end();
     }

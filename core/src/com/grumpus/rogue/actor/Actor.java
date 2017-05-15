@@ -2,6 +2,7 @@ package com.grumpus.rogue.actor;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.grumpus.rogue.RogueGame;
+import com.grumpus.rogue.data.ActorData;
 
 public class Actor {
 
@@ -9,15 +10,23 @@ public class Actor {
     private int x;
     private int y;
 
+    public int hp;
+    public int maxHp;
+
+    public int attack;
+
     private Action action;
 
-    public Actor(int gridX, int gridY, int tileX, int tileY) {
-        textureRegion = new TextureRegion(RogueGame.tileset,
-                tileX * RogueGame.TILE_SIZE,
-                tileY * RogueGame.TILE_SIZE,
-                RogueGame.TILE_SIZE, RogueGame.TILE_SIZE);
-        this.x = gridX * RogueGame.TILE_SIZE;
-        this.y = gridY * RogueGame.TILE_SIZE;
+    public Actor(TextureRegion textureRegion, int x, int y, ActorData data) {
+        // set graphic and position
+        this.textureRegion = textureRegion;
+        this.x = x;
+        this.y = y;
+
+        // load stats from data
+        maxHp = data.hp;
+        hp = data.hp;
+        attack = data.attack;
     }
 
     public void setTileX(int tx) {

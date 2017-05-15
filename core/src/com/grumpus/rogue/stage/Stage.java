@@ -37,23 +37,28 @@ public class Stage {
         width = props.get("width", Integer.class);
         height = props.get("height", Integer.class);
 
-        // load map layers into stage
+        // load map tile layers into stage
         for (MapLayer mapLayer : map.getLayers()) {
-            TiledMapTileLayer tmxLayer = (TiledMapTileLayer)mapLayer;
-            TextureRegion[][] layer = new TextureRegion[width][height];
+            try {
+                TiledMapTileLayer tmxLayer = (TiledMapTileLayer)mapLayer;
+                TextureRegion[][] layer = new TextureRegion[width][height];
 
-            // go through each cell individually and set the textureRegion from TiledMap
-            for (int x = 0; x < width; x++) {
-                for (int y = 0; y < height; y++) {
-                    TiledMapTileLayer.Cell cell = tmxLayer.getCell(x, y);
-                    if (cell != null) {
-                        layer[x][y] = cell.getTile().getTextureRegion();
+                // go through each cell individually and set the textureRegion from TiledMap
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
+                        TiledMapTileLayer.Cell cell = tmxLayer.getCell(x, y);
+                        if (cell != null) {
+                            layer[x][y] = cell.getTile().getTextureRegion();
+                        }
                     }
                 }
-            }
 
-            // create the layer
-            layers.put(tmxLayer.getName(), layer);
+                // create the layer
+                layers.put(tmxLayer.getName(), layer);
+            } catch (ClassCastException e) {
+                // ignore object layers, we only care about tile layers for stage geometry
+                Gdx.app.debug(TAG, "Ignoring \"" + mapLayer.getName() + "\" layer because it's not a tile layer.");
+            }
         }
     }
 

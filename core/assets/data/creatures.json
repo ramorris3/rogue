@@ -1,0 +1,14 @@
+{
+  "player": {
+    "hp": 5,
+    "attack": 1
+  },
+  "snake": {
+    "hp": 1,
+    "attack": 2
+  },
+  "bat": {
+    "hp": 2,
+    "attack": 1
+  }
+}

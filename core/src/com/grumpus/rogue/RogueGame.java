@@ -34,7 +34,7 @@ public class RogueGame extends Game {
         gson = new Gson();
 
 		// start game screen
-        setScreen(new GameScreen());
+        setScreen(new PlayScreen());
 	}
 
 	@Override

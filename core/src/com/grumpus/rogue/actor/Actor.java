@@ -1,11 +1,8 @@
 package com.grumpus.rogue.actor;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.google.gson.JsonElement;
 import com.grumpus.rogue.RogueGame;
 import com.grumpus.rogue.data.ActorData;
-import com.grumpus.rogue.util.JsonHelper;
 
 public class Actor {
 
@@ -20,24 +17,15 @@ public class Actor {
 
     private Action action;
 
-    public Actor(String key, int gridX, int gridY) {
-        loadFromJson(key);
-        this.x = gridX * RogueGame.TILE_SIZE;
-        this.y = gridY * RogueGame.TILE_SIZE;
-    }
+    public Actor(TextureRegion textureRegion, int x, int y, ActorData data) {
+        // set graphic and position
+        this.textureRegion = textureRegion;
+        this.x = x;
+        this.y = y;
 
-    private void loadFromJson(String key) {
-        // load the actor object from json
-        JsonElement jsonElm = JsonHelper.getJsonElement("data/creatures.json", key);
-        ActorData data = RogueGame.gson.fromJson(jsonElm, ActorData.class);
-
-        // extract needed variables
-        textureRegion = new TextureRegion(RogueGame.tileset,
-                data.tileX * RogueGame.TILE_SIZE,
-                data.tileY * RogueGame.TILE_SIZE,
-                RogueGame.TILE_SIZE, RogueGame.TILE_SIZE);
-        hp = data.hp;
+        // load stats from data
         maxHp = data.hp;
+        hp = data.hp;
         attack = data.attack;
     }
 

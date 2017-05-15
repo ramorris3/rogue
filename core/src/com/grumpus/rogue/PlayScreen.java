@@ -5,18 +5,24 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.grumpus.rogue.actor.Action;
 import com.grumpus.rogue.actor.Actor;
 import com.grumpus.rogue.actor.OpenDoorAction;
 import com.grumpus.rogue.actor.WalkAction;
+import com.grumpus.rogue.data.ActorData;
+import com.grumpus.rogue.data.DataLoader;
 import com.grumpus.rogue.stage.Stage;
 
 import java.util.ArrayList;
 
-public class GameScreen implements Screen {
+public class PlayScreen implements Screen {
 
     private OrthographicCamera camera;
     private FitViewport viewport;
@@ -25,7 +31,7 @@ public class GameScreen implements Screen {
     private ArrayList<Actor> actors;
     private Actor player;
 
-    public GameScreen() {
+    public PlayScreen() {
         // load camera and viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(RogueGame.VIEW_WIDTH, RogueGame.VIEW_HEIGHT, camera);
@@ -35,10 +41,32 @@ public class GameScreen implements Screen {
         TiledMap map = mapLoader.load("test.tmx");
         stage = new Stage(map);
 
-        // for now, hardcode a player's position
+        // load all actors from map
         actors = new ArrayList<Actor>();
-        player = new Actor("player", 1, 1);
-        actors.add(player);
+        MapLayer actorLayer = map.getLayers().get("actors");
+        if (actorLayer != null) {
+            // load each actor
+            for (TiledMapTileMapObject tileObj : actorLayer.getObjects().getByType(TiledMapTileMapObject.class)) {
+                // load actor data from key
+                String key = tileObj.getName();
+                ActorData data = DataLoader.loadActorData(key);
+
+                // create actor from data, if not null
+                if (data != null) {
+                    int x = (int)tileObj.getX();
+                    int y = (int)tileObj.getY();
+                    TextureRegion tr = tileObj.getTextureRegion();
+                    Actor actor = new Actor(tr, x, y, data);
+                    actors.add(actor);
+
+                    // find and keep track of player obj
+                    if (key.equals("player")) player = actor;
+                } else {
+                    Gdx.app.log(this.getClass().getSimpleName(), "WARNING! There is no actor named " +
+                            key + ", no actor was loaded.");
+                }
+            }
+        }
     }
 
     private Action processInput() {

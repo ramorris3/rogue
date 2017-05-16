@@ -1,0 +1,14 @@
+{
+  "mushroom": {
+    "hp": 11,
+    "attack": 1,
+    "defense": 3,
+    "agility": 1
+  },
+  "bat": {
+    "hp": 3,
+    "attack": 3,
+    "defense": 1,
+    "agility": 3
+  }
+}

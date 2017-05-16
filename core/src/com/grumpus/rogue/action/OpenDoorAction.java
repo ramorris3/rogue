@@ -1,4 +1,4 @@
-package com.grumpus.rogue.actor;
+package com.grumpus.rogue.action;
 
 import com.grumpus.rogue.stage.Stage;
 import com.grumpus.rogue.util.TileGraphics;

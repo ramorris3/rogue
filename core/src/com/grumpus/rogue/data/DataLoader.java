@@ -10,10 +10,10 @@ import com.grumpus.rogue.util.JsonHelper;
  */
 public class DataLoader {
 
-    public static ActorData loadActorData(String key) {
-        // load the actor data object from json
-        JsonElement jsonElm = JsonHelper.getJsonElement("data/creatures.json", key);
-        return RogueGame.gson.fromJson(jsonElm, ActorData.class);
+    public static MonsterData loadMonsterData(String key) {
+        // load the action data object from json
+        JsonElement jsonElm = JsonHelper.getJsonElement("data/monsters.json", key);
+        return RogueGame.gson.fromJson(jsonElm, MonsterData.class);
     }
 
 }

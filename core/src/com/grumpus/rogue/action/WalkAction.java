@@ -1,4 +1,6 @@
-package com.grumpus.rogue.actor;
+package com.grumpus.rogue.action;
+
+import com.grumpus.rogue.actor.Actor;
 
 public class WalkAction extends Action {
 

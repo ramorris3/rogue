@@ -55,14 +55,16 @@ public class PlayScreen implements Screen {
         camera.update();
         RogueGame.batch.setProjectionMatrix(camera.combined);
 
-        // update player
-        player.processInput(stage);
-        if (player.hasNextAction()) {
-            player.getNextAction().execute();
-            player.setNextAction(null);
+        // update player if not dead
+        if (!player.isDead()) {
+            player.processInput(stage);
+            if (player.hasNextAction()) {
+                player.getNextAction().execute();
+                player.setNextAction(null);
 
-            // update monsters only if player has taken a turn
-            stage.updateMonsters();
+                // update monsters only if player has taken a turn
+                stage.updateMonsters();
+            }
         }
 
         RogueGame.batch.begin();
@@ -70,8 +72,10 @@ public class PlayScreen implements Screen {
         // draw stage
         stage.draw();
 
-        // draw player
-        player.draw();
+        // draw player if not dead
+        if (!player.isDead()) {
+            player.draw();
+        }
 
         // draw UI
         RogueGame.font.draw(RogueGame.batch,

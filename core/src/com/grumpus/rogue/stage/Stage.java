@@ -25,6 +25,8 @@ public class Stage {
 
     private final String TAG = this.getClass().getSimpleName();
 
+    private Player player;
+
     private int width;
     private int height;
     private LinkedHashMap<String, TextureRegion[][]> layers;
@@ -33,6 +35,7 @@ public class Stage {
     public Stage(TiledMap map, Player player) {
         layers = new LinkedHashMap<>();
         monsters = new ArrayList<>();
+        this.player = player;
         loadTiles(map);
         loadMonsters(map, player);
     }
@@ -85,18 +88,18 @@ public class Stage {
             // load each monster
             for (TiledMapTileMapObject tileObj : monsterLayer.getObjects().getByType(TiledMapTileMapObject.class)) {
                 // load action data from key
-                String key = tileObj.getName();
-                MonsterData data = DataLoader.loadMonsterData(key);
+                String name = tileObj.getName();
+                MonsterData data = DataLoader.loadMonsterData(name);
 
                 // create action from data, if not null
                 if (data != null) {
                     int x = (int)tileObj.getX();
                     int y = (int)tileObj.getY();
                     TextureRegion tr = tileObj.getTextureRegion();
-                    monsters.add(new Monster(player, tr, x, y, data));
+                    monsters.add(new Monster(player, name, tr, x, y, data));
                 } else {
                     Gdx.app.log(this.getClass().getSimpleName(), "WARNING! There is no monster named " +
-                            key + ", no monster was loaded.");
+                            name + ", no monster was loaded.");
                 }
             }
         }
@@ -130,12 +133,39 @@ public class Stage {
         return getTextureRegion(layerName, tx, ty) != null;
     }
 
+    /** Check if the player is at a given tile location */
+    public boolean isPlayerAt(int tx, int ty) {
+        return player.getTileX() == tx && player.getTileY() == ty;
+    }
+
+    public void addMonster(Monster m) {
+        monsters.add(m);
+    }
+
+    public void removeMonster(Monster m) {
+        monsters.remove(m);
+    }
+
+    /** Get the monster at a specific tile location.  Null if no monster there. */
+    public Monster getMonsterAt(int tx, int ty) {
+        for (Monster monster : monsters) {
+            if (monster.getTileX() == tx && monster.getTileY() == ty) {
+                return monster;
+            }
+        }
+        return null;
+    }
+
     /**
-     * Check if a tile is blocked by level geometry (doors, solids, etc.)
+     * Check if a tile is blocked by level geometry (doors, solids, etc.) or by
+     * actors (player or monsters).
      * @return True if blocked, false if clear.
      */
     public boolean isBlocked(int tx, int ty) {
-        return isLayerAt("door", tx, ty) || isLayerAt("solid", tx, ty);
+        return isLayerAt("door", tx, ty)
+                || isLayerAt("solid", tx, ty)
+                || isPlayerAt(tx, ty)
+                || getMonsterAt(tx, ty) != null;
     }
 
     public void updateMonsters() {

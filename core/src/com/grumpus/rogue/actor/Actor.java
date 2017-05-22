@@ -1,10 +1,14 @@
 package com.grumpus.rogue.actor;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.grumpus.rogue.RogueGame;
 import com.grumpus.rogue.action.Action;
+import com.grumpus.rogue.stage.Stage;
 
 public class Actor {
+
+    private String name;
 
     private TextureRegion textureRegion;
     private int x;
@@ -19,8 +23,10 @@ public class Actor {
 
     protected Action nextAction;
 
-    public Actor(TextureRegion textureRegion, int x, int y,
+    public Actor(String name, TextureRegion textureRegion, int x, int y,
                  int hp, int attack, int defense, int agility) {
+        this.name = name;
+
         // set graphic and position
         this.textureRegion = textureRegion;
         this.x = x;
@@ -50,6 +56,17 @@ public class Actor {
         y = ty * RogueGame.TILE_SIZE;
     }
 
+    public boolean isNextTo(Actor other) {
+        int dx = Math.abs(getTileX() - other.getTileX());
+        int dy = Math.abs(getTileY() - other.getTileY());
+        return dx + dy == 1;
+    }
+
+    /** Both player and monster classes must override this method */
+    public void die(Stage stage) {
+        Gdx.app.debug(this.getClass().getSimpleName(), "Die function not overridden.");
+    }
+
     public Action getNextAction() {
         return nextAction;
     }
@@ -64,4 +81,8 @@ public class Actor {
         RogueGame.batch.draw(textureRegion, x, y);
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

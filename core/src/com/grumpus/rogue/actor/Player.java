@@ -3,15 +3,28 @@ package com.grumpus.rogue.actor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.grumpus.rogue.action.Action;
+import com.grumpus.rogue.action.AttackAction;
 import com.grumpus.rogue.action.OpenDoorAction;
 import com.grumpus.rogue.action.WalkAction;
 import com.grumpus.rogue.stage.Stage;
 
 public class Player extends Actor {
 
+    private boolean dead;
+
     public Player(TextureRegion textureRegion, int x, int y) {
-        super(textureRegion, x, y, 5, 1, 1, 1);
+        super("you", textureRegion, x, y, 15, 5, 5, 1);
+        dead = false;
+    }
+
+    @Override
+    public void die(Stage stage) {
+        // TODO: add player death animation here
+        dead = true;
+    }
+
+    public boolean isDead() {
+        return dead;
     }
 
     /**
@@ -48,12 +61,19 @@ public class Player extends Actor {
         int tx = getTileX() + xDir;
         int ty = getTileY() + yDir;
 
-        // check for door, then check for solid
-        if (stage.isLayerAt("door", tx, ty)) {
-            // there's a door here, so return an open-door nextAction
-            setNextAction(new OpenDoorAction(stage, tx, ty));
-        } else if (!stage.isLayerAt("solid", tx, ty)) {
-            // there's no solid here, so player can move
+        // check if blocked
+        if (stage.isBlocked(tx, ty)) {
+            // check for monster
+            Monster m = stage.getMonsterAt(tx, ty);
+            if (m != null) {
+                setNextAction(new AttackAction(this, m, stage));
+            } else if (stage.isLayerAt("door", tx, ty)) {
+                // check for door
+                setNextAction(new OpenDoorAction(stage, tx, ty));
+            }
+            // otherwise, it's solid, don't do anything
+        } else {
+            // walk to next tile
             setNextAction(new WalkAction(this, xDir, yDir));
         }
     }

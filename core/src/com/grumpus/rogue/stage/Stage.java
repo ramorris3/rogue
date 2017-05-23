@@ -13,8 +13,10 @@ import com.grumpus.rogue.actor.Monster;
 import com.grumpus.rogue.actor.Player;
 import com.grumpus.rogue.data.MonsterData;
 import com.grumpus.rogue.data.DataLoader;
+import com.grumpus.rogue.effect.Effect;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 /**
@@ -32,9 +34,12 @@ public class Stage {
     private LinkedHashMap<String, TextureRegion[][]> layers;
     private ArrayList<Monster> monsters;
 
+    private ArrayList<Effect> effects;
+
     public Stage(TiledMap map, Player player) {
         layers = new LinkedHashMap<>();
         monsters = new ArrayList<>();
+        effects = new ArrayList<>();
         this.player = player;
         loadTiles(map);
         loadMonsters(map, player);
@@ -138,6 +143,10 @@ public class Stage {
         return player.getTileX() == tx && player.getTileY() == ty;
     }
 
+    public void addEffect(Effect e) {
+        effects.add(e);
+    }
+
     public void addMonster(Monster m) {
         monsters.add(m);
     }
@@ -182,11 +191,8 @@ public class Stage {
         }
     }
 
-    /**
-     * Iterate through all layers and monsters and draw them to {@link RogueGame#batch} in order.
-     */
-    public void draw() {
-        // drawing layers
+    /** Draw all level geometry */
+    public void drawLevel() {
         for (TextureRegion[][] layer : layers.values()) {
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
@@ -199,10 +205,26 @@ public class Stage {
                 }
             }
         }
+    }
 
-        // drawing all other monsters
+    /** Draw all monsters */
+    public void drawMonsters() {
         for (Actor actor : monsters) {
             actor.draw();
+        }
+    }
+
+    /** Draw all effects */
+    public void drawEffects(float delta) {
+        // draw all effects
+        Iterator<Effect> iter = effects.iterator();
+        while (iter.hasNext()) {
+            Effect e = iter.next();
+            if (e.isFinished()) {
+                iter.remove();
+            } else {
+                e.draw(delta);
+            }
         }
     }
 }

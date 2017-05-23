@@ -2,6 +2,7 @@ package com.grumpus.rogue.actor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.grumpus.rogue.action.AttackAction;
 import com.grumpus.rogue.action.OpenDoorAction;
@@ -66,7 +67,8 @@ public class Player extends Actor {
             // check for monster
             Monster m = stage.getMonsterAt(tx, ty);
             if (m != null) {
-                setNextAction(new AttackAction(this, m, stage));
+                setNextAction(new AttackAction(this, m, stage,
+                        Color.GREEN, Color.WHITE, Color.YELLOW));
             } else if (stage.isLayerAt("door", tx, ty)) {
                 // check for door
                 setNextAction(new OpenDoorAction(stage, tx, ty));

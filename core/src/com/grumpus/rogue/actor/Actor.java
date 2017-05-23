@@ -40,6 +40,17 @@ public class Actor {
         this.agility = agility;
     }
 
+    public int getX() { return x; }
+    public int getY() { return y; }
+
+    public int getCenterX() {
+        return x + (RogueGame.TILE_SIZE / 2);
+    }
+
+    public int getCenterY() {
+        return y + (RogueGame.TILE_SIZE / 2);
+    }
+
     public void setTileX(int tx) {
         x = tx * RogueGame.TILE_SIZE;
     }

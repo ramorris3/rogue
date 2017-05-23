@@ -69,13 +69,17 @@ public class PlayScreen implements Screen {
 
         RogueGame.batch.begin();
 
-        // draw stage
-        stage.draw();
+        // draw level and monsters
+        stage.drawLevel();
+        stage.drawMonsters();
 
         // draw player if not dead
         if (!player.isDead()) {
             player.draw();
         }
+
+        // draw effects
+        stage.drawEffects(delta);
 
         // draw UI
         RogueGame.font.draw(RogueGame.batch,

@@ -6,32 +6,51 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.grumpus.rogue.RogueGame;
+import com.grumpus.rogue.actor.Actor;
+import com.grumpus.rogue.actor.Monster;
+import com.grumpus.rogue.actor.Player;
+import com.grumpus.rogue.data.MonsterData;
+import com.grumpus.rogue.data.DataLoader;
+import com.grumpus.rogue.effect.Effect;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 /**
  * Represents a level with its interactive geometry.
- * Includes walls, doors, etc., but not actors.
+ * Includes walls, doors, etc., but not monsters.
  */
 public class Stage {
 
     private final String TAG = this.getClass().getSimpleName();
 
-    private LinkedHashMap<String, TextureRegion[][]> layers;
+    private Player player;
+
     private int width;
     private int height;
+    private LinkedHashMap<String, TextureRegion[][]> layers;
+    private ArrayList<Monster> monsters;
 
-    public Stage(TiledMap map) {
-        layers = new LinkedHashMap<String, TextureRegion[][]>();
-        loadMap(map);
+    private ArrayList<Effect> effects;
+
+    public Stage(TiledMap map, Player player) {
+        layers = new LinkedHashMap<>();
+        monsters = new ArrayList<>();
+        effects = new ArrayList<>();
+        this.player = player;
+        loadTiles(map);
+        loadMonsters(map, player);
     }
 
     /**
-     * Generates the stage's layers from a {@link TiledMap}.
-     * @param map The {@link TiledMap} to load.
+     * Generates the stage's level geometry from a {@link TiledMap}.
+     * The level is loaded into {@link Stage#layers}.
+     * @param map The map to load from.
      */
-    private void loadMap(TiledMap map) {
+    private void loadTiles(TiledMap map) {
         // get width and height (in tiles) from the map
         MapProperties props = map.getProperties();
         width = props.get("width", Integer.class);
@@ -62,6 +81,35 @@ public class Stage {
         }
     }
 
+    /**
+     * Generates the player and monsters from a {@link TiledMap}.
+     * The monsters are loaded into {@link Stage#monsters}.
+     * @param map The map to load from.
+     */
+    private void loadMonsters(TiledMap map, Player player) {
+        // load all monsters from map
+        MapLayer monsterLayer = map.getLayers().get("monsters");
+        if (monsterLayer != null) {
+            // load each monster
+            for (TiledMapTileMapObject tileObj : monsterLayer.getObjects().getByType(TiledMapTileMapObject.class)) {
+                // load action data from key
+                String name = tileObj.getName();
+                MonsterData data = DataLoader.loadMonsterData(name);
+
+                // create action from data, if not null
+                if (data != null) {
+                    int x = (int)tileObj.getX();
+                    int y = (int)tileObj.getY();
+                    TextureRegion tr = tileObj.getTextureRegion();
+                    monsters.add(new Monster(player, name, tr, x, y, data));
+                } else {
+                    Gdx.app.log(this.getClass().getSimpleName(), "WARNING! There is no monster named " +
+                            name + ", no monster was loaded.");
+                }
+            }
+        }
+    }
+
     public TextureRegion getTextureRegion(String layerName, int tx, int ty) {
         try {
             return layers.get(layerName)[tx][ty];
@@ -84,16 +132,67 @@ public class Stage {
      * @param layerName The name of the layer, i.e. "solid", "door", etc.
      * @param tx The tile-x position to check.
      * @param ty The tile-y position to check.
-     * @return
+     * @return True if the layer has a tile at the given position, false if otherwise.
      */
     public boolean isLayerAt(String layerName, int tx, int ty) {
         return getTextureRegion(layerName, tx, ty) != null;
     }
 
+    /** Check if the player is at a given tile location */
+    public boolean isPlayerAt(int tx, int ty) {
+        return player.getTileX() == tx && player.getTileY() == ty;
+    }
+
+    public void addEffect(Effect e) {
+        effects.add(e);
+    }
+
+    public void addMonster(Monster m) {
+        monsters.add(m);
+    }
+
+    public void removeMonster(Monster m) {
+        monsters.remove(m);
+    }
+
+    /** Get the monster at a specific tile location.  Null if no monster there. */
+    public Monster getMonsterAt(int tx, int ty) {
+        for (Monster monster : monsters) {
+            if (monster.getTileX() == tx && monster.getTileY() == ty) {
+                return monster;
+            }
+        }
+        return null;
+    }
+
     /**
-     * Iterate through all layers and draw them to {@link RogueGame#batch} in order.
+     * Check if a tile is blocked by level geometry (doors, solids, etc.) or by
+     * actors (player or monsters).
+     * @return True if blocked, false if clear.
      */
-    public void draw() {
+    public boolean isBlocked(int tx, int ty) {
+        return isLayerAt("door", tx, ty)
+                || isLayerAt("solid", tx, ty)
+                || isPlayerAt(tx, ty)
+                || getMonsterAt(tx, ty) != null;
+    }
+
+    public void updateMonsters() {
+        // perform actions for all monsters
+        for (Monster monster : monsters) {
+
+            // update monster action based on AI input
+            monster.processAI(this);
+
+            // execute action if not null
+            if (monster.hasNextAction()) {
+                monster.getNextAction().execute();
+            }
+        }
+    }
+
+    /** Draw all level geometry */
+    public void drawLevel() {
         for (TextureRegion[][] layer : layers.values()) {
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
@@ -104,6 +203,27 @@ public class Stage {
                                 y * RogueGame.TILE_SIZE);
                     }
                 }
+            }
+        }
+    }
+
+    /** Draw all monsters */
+    public void drawMonsters() {
+        for (Actor actor : monsters) {
+            actor.draw();
+        }
+    }
+
+    /** Draw all effects */
+    public void drawEffects(float delta) {
+        // draw all effects
+        Iterator<Effect> iter = effects.iterator();
+        while (iter.hasNext()) {
+            Effect e = iter.next();
+            if (e.isFinished()) {
+                iter.remove();
+            } else {
+                e.draw(delta);
             }
         }
     }

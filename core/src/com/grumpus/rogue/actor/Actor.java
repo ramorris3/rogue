@@ -1,10 +1,14 @@
 package com.grumpus.rogue.actor;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.grumpus.rogue.RogueGame;
-import com.grumpus.rogue.data.ActorData;
+import com.grumpus.rogue.action.Action;
+import com.grumpus.rogue.stage.Stage;
 
 public class Actor {
+
+    private String name;
 
     private TextureRegion textureRegion;
     private int x;
@@ -14,19 +18,37 @@ public class Actor {
     public int maxHp;
 
     public int attack;
+    public int defense;
+    public int agility;
 
-    private Action action;
+    protected Action nextAction;
 
-    public Actor(TextureRegion textureRegion, int x, int y, ActorData data) {
+    public Actor(String name, TextureRegion textureRegion, int x, int y,
+                 int hp, int attack, int defense, int agility) {
+        this.name = name;
+
         // set graphic and position
         this.textureRegion = textureRegion;
         this.x = x;
         this.y = y;
 
-        // load stats from data
-        maxHp = data.hp;
-        hp = data.hp;
-        attack = data.attack;
+        // load stats from constructor
+        maxHp = hp;
+        this.hp = hp;
+        this.attack = attack;
+        this.defense = defense;
+        this.agility = agility;
+    }
+
+    public int getX() { return x; }
+    public int getY() { return y; }
+
+    public int getCenterX() {
+        return x + (RogueGame.TILE_SIZE / 2);
+    }
+
+    public int getCenterY() {
+        return y + (RogueGame.TILE_SIZE / 2);
     }
 
     public void setTileX(int tx) {
@@ -45,16 +67,33 @@ public class Actor {
         y = ty * RogueGame.TILE_SIZE;
     }
 
-    public Action getAction() {
-        return action;
+    public boolean isNextTo(Actor other) {
+        int dx = Math.abs(getTileX() - other.getTileX());
+        int dy = Math.abs(getTileY() - other.getTileY());
+        return dx + dy == 1;
     }
 
-    public void setAction(Action action) {
-        this.action = action;
+    /** Both player and monster classes must override this method */
+    public void die(Stage stage) {
+        Gdx.app.debug(this.getClass().getSimpleName(), "Die function not overridden.");
     }
 
-    public void draw(float deltaTime) {
+    public Action getNextAction() {
+        return nextAction;
+    }
+
+    public void setNextAction(Action nextAction) {
+        this.nextAction = nextAction;
+    }
+
+    public boolean hasNextAction() { return nextAction != null; }
+
+    public void draw() {
         RogueGame.batch.draw(textureRegion, x, y);
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

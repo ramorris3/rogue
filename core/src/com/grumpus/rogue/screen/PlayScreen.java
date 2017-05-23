@@ -1,18 +1,18 @@
-package com.grumpus.rogue;
+package com.grumpus.rogue.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.grumpus.rogue.action.Action;
+import com.grumpus.rogue.RogueGame;
 import com.grumpus.rogue.actor.Player;
 import com.grumpus.rogue.stage.Stage;
 
-public class PlayScreen implements Screen {
+public class PlayScreen extends ScreenAdapter {
 
     private OrthographicCamera camera;
     private FitViewport viewport;
@@ -37,7 +37,8 @@ public class PlayScreen implements Screen {
 
         // load map and stage
         TmxMapLoader mapLoader = new TmxMapLoader();
-        TiledMap map = mapLoader.load("test.tmx");
+        // TODO: load map dynamically
+        TiledMap map = mapLoader.load("maps/test.tmx");
         stage = new Stage(map, player);
     }
 
@@ -94,21 +95,4 @@ public class PlayScreen implements Screen {
         viewport.update(width, height);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
     }
-
-    @Override
-    public void dispose() {
-
-    }
-
-    @Override
-    public void show() {}
-
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
 }

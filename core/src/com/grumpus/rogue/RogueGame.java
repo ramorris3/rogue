@@ -6,14 +6,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.google.gson.Gson;
+import com.grumpus.rogue.screen.PlayScreen;
 
 public class RogueGame extends Game {
 
     public static final int VIEW_WIDTH = 320;
     public static final int VIEW_HEIGHT = 256;
     public static final int TILE_SIZE = 16;
-    public static final float UI_SCALE = 0.25f;
-    public static final float EFFECT_SCALE = 0.18f;
 
 	public static SpriteBatch batch;
 	public static BitmapFont font;
@@ -26,11 +25,11 @@ public class RogueGame extends Game {
 		// instantiate batch, font and tileset
         batch = new SpriteBatch();
         font = new BitmapFont(
-        		Gdx.files.internal("press_start.fnt"),
-				Gdx.files.internal("press_start.png"),
+        		Gdx.files.internal("fonts/press_start.fnt"),
+				Gdx.files.internal("fonts/press_start.png"),
 				false);
-        font.getData().setScale(UI_SCALE);
-        tileset = new Texture("tileset.png");
+        font.getData().setScale(0.25f);
+        tileset = new Texture("img/tileset.png");
 
         // instantiate static gson instance
         gson = new Gson();

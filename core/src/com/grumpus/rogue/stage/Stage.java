@@ -200,7 +200,7 @@ public class Stage {
                     if (tr != null) {
                         RogueGame.batch.draw(layer[x][y],
                                 x * RogueGame.TILE_SIZE,
-                                y * RogueGame.TILE_SIZE);
+                                y * RogueGame.TILE_SIZE + RogueGame.STAGE_Y);
                     }
                 }
             }

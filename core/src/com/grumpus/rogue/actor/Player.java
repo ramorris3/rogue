@@ -68,7 +68,7 @@ public class Player extends Actor {
             Monster m = stage.getMonsterAt(tx, ty);
             if (m != null) {
                 setNextAction(new AttackAction(this, m, stage,
-                        Color.GREEN, Color.WHITE, Color.YELLOW));
+                        Color.WHITE, Color.YELLOW));
             } else if (stage.isLayerAt("door", tx, ty)) {
                 // check for door
                 setNextAction(new OpenDoorAction(stage, tx, ty));

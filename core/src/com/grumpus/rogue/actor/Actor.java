@@ -89,7 +89,7 @@ public class Actor {
     public boolean hasNextAction() { return nextAction != null; }
 
     public void draw() {
-        RogueGame.batch.draw(textureRegion, x, y);
+        RogueGame.batch.draw(textureRegion, x, y + RogueGame.STAGE_Y);
     }
 
     @Override

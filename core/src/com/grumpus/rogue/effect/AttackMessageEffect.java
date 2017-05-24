@@ -29,7 +29,7 @@ public class AttackMessageEffect implements Effect {
                 Color.BLACK, 0, Align.bottomLeft, false);
         oy = 0;
         oyMax = 8;
-        timeLeft =0.7f;
+        timeLeft = 0.7f;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class AttackMessageEffect implements Effect {
 
         // draw
         float x = actor.getCenterX() - (layout.width / 2);
-        float y = actor.getY() + oy;
+        float y = actor.getY() + oy + RogueGame.STAGE_Y;
 
         // draw bg letters (black)
         for (int i = -1; i <= 1; i++) {

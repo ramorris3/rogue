@@ -70,6 +70,9 @@ public class PlayScreen extends ScreenAdapter {
 
         RogueGame.batch.begin();
 
+        // draw message log
+        RogueGame.messageLog.draw();
+
         // draw level and monsters
         stage.drawLevel();
         stage.drawMonsters();
@@ -85,7 +88,7 @@ public class PlayScreen extends ScreenAdapter {
         // draw UI
         RogueGame.font.draw(RogueGame.batch,
                 "HP: " + player.hp + "/" + player.maxHp,
-                0, RogueGame.VIEW_HEIGHT - 5);
+                2, RogueGame.HUD_Y);
 
         RogueGame.batch.end();
     }

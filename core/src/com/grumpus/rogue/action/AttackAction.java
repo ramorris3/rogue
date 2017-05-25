@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.grumpus.rogue.RogueGame;
 import com.grumpus.rogue.actor.Actor;
-import com.grumpus.rogue.effect.AttackMessageEffect;
-import com.grumpus.rogue.stage.Stage;
+import com.grumpus.rogue.effect.TextEffect;
+import com.grumpus.rogue.dungeon.Room;
 
 public class AttackAction extends Action {
 
@@ -14,24 +14,24 @@ public class AttackAction extends Action {
 
     private Actor attacker;
     private Actor defender;
-    private Stage stage;
+    private Room room;
 
     private Color color;
     private Color critColor;
 
-    public AttackAction(Actor attacker, Actor defender, Stage stage,
+    public AttackAction(Actor attacker, Actor defender, Room room,
                         Color color, Color critColor) {
         super(attacker);
         this.attacker = attacker;
         this.defender = defender;
-        this.stage = stage;
+        this.room = room;
         this.color = color;
         this.critColor = critColor;
     }
 
     /** Constructor for enemies, all red */
-    public AttackAction(Actor attacker, Actor defender, Stage stage) {
-        this(attacker, defender, stage, Color.RED, Color.PINK);
+    public AttackAction(Actor attacker, Actor defender, Room room) {
+        this(attacker, defender, room, Color.RED, Color.PINK);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class AttackAction extends Action {
         if (roll(20, attacker.agility) < roll(6, defender.agility)) {
             Gdx.app.debug(TAG, attacker + " missed " + defender + "!");
             RogueGame.messageLog.add(attacker + " missed " + defender + "!", color);
-            stage.addEffect(new AttackMessageEffect(defender, "Miss!", color));
+            room.addEffect(new TextEffect(defender, "Miss!", color));
             return;
         }
 
@@ -74,15 +74,15 @@ public class AttackAction extends Action {
         Color c = color;
         if (crit) c = critColor;
 
-        stage.addEffect(new AttackMessageEffect(defender, message, c));
+        room.addEffect(new TextEffect(defender, message, c));
         Gdx.app.debug(TAG, attacker + " dealt " + damage + " dmg to " + defender + ".");
         RogueGame.messageLog.add(attacker + " dealt " + damage + " dmg to " + defender + ".", c);
 
         if (defender.hp <= 0) {
             defender.hp = 0;
-            defender.die(stage);
+            defender.die(room);
             Gdx.app.debug(TAG, defender + " died.");
-            RogueGame.messageLog.add(defender + " died.", c);
+            RogueGame.messageLog.add(defender + " died.", color);
         }
     }
 

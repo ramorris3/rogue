@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.grumpus.rogue.action.AttackAction;
 import com.grumpus.rogue.action.OpenDoorAction;
 import com.grumpus.rogue.action.WalkAction;
-import com.grumpus.rogue.stage.Stage;
+import com.grumpus.rogue.dungeon.Room;
 
 public class Player extends Actor {
 
@@ -19,7 +19,7 @@ public class Player extends Actor {
     }
 
     @Override
-    public void die(Stage stage) {
+    public void die(Room room) {
         // TODO: add player death animation here
         dead = true;
     }
@@ -32,7 +32,7 @@ public class Player extends Actor {
      * Input processing function for handling player input.  Gets the player action's nextAction
      * based on input.
      */
-    public void processInput(Stage stage) {
+    public void processInput(Room room) {
         // player already has an action waiting for execution
         if (hasNextAction()) return;
 
@@ -63,15 +63,15 @@ public class Player extends Actor {
         int ty = getTileY() + yDir;
 
         // check if blocked
-        if (stage.isBlocked(tx, ty)) {
+        if (room.isBlocked(tx, ty)) {
             // check for monster
-            Monster m = stage.getMonsterAt(tx, ty);
+            Monster m = room.getMonsterAt(tx, ty);
             if (m != null) {
-                setNextAction(new AttackAction(this, m, stage,
+                setNextAction(new AttackAction(this, m, room,
                         Color.WHITE, Color.YELLOW));
-            } else if (stage.isLayerAt("door", tx, ty)) {
+            } else if (room.isLayerAt("door", tx, ty)) {
                 // check for door
-                setNextAction(new OpenDoorAction(stage, tx, ty));
+                setNextAction(new OpenDoorAction(room, tx, ty));
             }
             // otherwise, it's solid, don't do anything
         } else {

@@ -15,9 +15,11 @@ public class RogueGame extends Game {
     public static final int TILE_SIZE = 16;
     public static final int LOG_HEIGHT = 80;
     public static final int STAGE_Y = LOG_HEIGHT;
-    public static final int VIEW_WIDTH = 320;
-    public static final int VIEW_HEIGHT = 240 + TILE_SIZE + LOG_HEIGHT;
-    public static final int HUD_Y = VIEW_HEIGHT - 5;
+	public static final int STAGE_WIDTH = 336;
+	public static final int STAGE_HEIGHT = 240;
+	public static final int VIEW_WIDTH = STAGE_WIDTH;
+	public static final int VIEW_HEIGHT = STAGE_HEIGHT + TILE_SIZE + LOG_HEIGHT;
+	public static final int HUD_Y = VIEW_HEIGHT - 5;
 
 
 	public static SpriteBatch batch;

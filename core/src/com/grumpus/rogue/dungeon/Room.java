@@ -1,4 +1,4 @@
-package com.grumpus.rogue.stage;
+package com.grumpus.rogue.dungeon;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,6 +14,7 @@ import com.grumpus.rogue.actor.Player;
 import com.grumpus.rogue.data.MonsterData;
 import com.grumpus.rogue.data.DataLoader;
 import com.grumpus.rogue.effect.Effect;
+import com.grumpus.rogue.util.TileGraphics;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,7 +24,7 @@ import java.util.LinkedHashMap;
  * Represents a level with its interactive geometry.
  * Includes walls, doors, etc., but not monsters.
  */
-public class Stage {
+public class Room {
 
     private final String TAG = this.getClass().getSimpleName();
 
@@ -36,7 +37,7 @@ public class Stage {
 
     private ArrayList<Effect> effects;
 
-    public Stage(TiledMap map, Player player) {
+    public Room(TiledMap map, Player player) {
         layers = new LinkedHashMap<>();
         monsters = new ArrayList<>();
         effects = new ArrayList<>();
@@ -46,8 +47,8 @@ public class Stage {
     }
 
     /**
-     * Generates the stage's level geometry from a {@link TiledMap}.
-     * The level is loaded into {@link Stage#layers}.
+     * Generates the dungeon's level geometry from a {@link TiledMap}.
+     * The level is loaded into {@link Room#layers}.
      * @param map The map to load from.
      */
     private void loadTiles(TiledMap map) {
@@ -56,7 +57,7 @@ public class Stage {
         width = props.get("width", Integer.class);
         height = props.get("height", Integer.class);
 
-        // load map tile layers into stage
+        // load map tile layers into dungeon
         for (MapLayer mapLayer : map.getLayers()) {
             try {
                 TiledMapTileLayer tmxLayer = (TiledMapTileLayer)mapLayer;
@@ -75,7 +76,7 @@ public class Stage {
                 // create the layer
                 layers.put(tmxLayer.getName(), layer);
             } catch (ClassCastException e) {
-                // ignore object layers, we only care about tile layers for stage geometry
+                // ignore object layers, we only care about tile layers for dungeon geometry
                 Gdx.app.debug(TAG, "Ignoring \"" + mapLayer.getName() + "\" layer because it's not a tile layer.");
             }
         }
@@ -83,7 +84,7 @@ public class Stage {
 
     /**
      * Generates the player and monsters from a {@link TiledMap}.
-     * The monsters are loaded into {@link Stage#monsters}.
+     * The monsters are loaded into {@link Room#monsters}.
      * @param map The map to load from.
      */
     private void loadMonsters(TiledMap map, Player player) {
@@ -163,6 +164,20 @@ public class Stage {
             }
         }
         return null;
+    }
+
+    /** Removes a wall and adds a door at tx, ty. */
+    public void carveDoor(int tx, int ty) {
+        try {
+            TextureRegion[][] solidLayer = layers.get("solid");
+            TextureRegion[][] doorLayer = layers.get("door");
+            solidLayer[tx][ty] = null;
+            doorLayer[tx][ty] = TileGraphics.CLOSED_DOOR;
+        } catch (NullPointerException e) {
+            Gdx.app.log(TAG, "WARNING! This room is missing either a door or solid layer!");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Gdx.app.log(TAG, "WARNING! Can't carve a door out of bounds (" + tx + ", " + ty + ")");
+        }
     }
 
     /**

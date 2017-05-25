@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.grumpus.rogue.RogueGame;
 import com.grumpus.rogue.action.Action;
-import com.grumpus.rogue.stage.Stage;
+import com.grumpus.rogue.dungeon.Room;
 
 public class Actor {
 
@@ -74,7 +74,7 @@ public class Actor {
     }
 
     /** Both player and monster classes must override this method */
-    public void die(Stage stage) {
+    public void die(Room room) {
         Gdx.app.debug(this.getClass().getSimpleName(), "Die function not overridden.");
     }
 

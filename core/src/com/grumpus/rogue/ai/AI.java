@@ -4,7 +4,7 @@ import com.grumpus.rogue.action.Action;
 import com.grumpus.rogue.actor.Actor;
 import com.grumpus.rogue.actor.Monster;
 import com.grumpus.rogue.actor.Player;
-import com.grumpus.rogue.stage.Stage;
+import com.grumpus.rogue.dungeon.Room;
 
 public abstract class AI {
 
@@ -16,5 +16,5 @@ public abstract class AI {
         this.player = player;
     }
 
-    public abstract Action getNextAction(Stage stage);
+    public abstract Action getNextAction(Room room);
 }

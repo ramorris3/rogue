@@ -17,4 +17,9 @@ public class TileGraphics {
             RogueGame.tileset,
             4 * RogueGame.TILE_SIZE, 4 * RogueGame.TILE_SIZE,
             RogueGame.TILE_SIZE, RogueGame.TILE_SIZE);
+
+    public static final TextureRegion DOORWAY = new TextureRegion(
+            RogueGame.tileset,
+            RogueGame.TILE_SIZE, 0,
+            RogueGame.TILE_SIZE, RogueGame.TILE_SIZE);
 }

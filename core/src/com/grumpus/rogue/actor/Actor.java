@@ -43,6 +43,9 @@ public class Actor {
     public int getX() { return x; }
     public int getY() { return y; }
 
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
+
     public int getCenterX() {
         return x + (RogueGame.TILE_SIZE / 2);
     }
@@ -89,7 +92,7 @@ public class Actor {
     public boolean hasNextAction() { return nextAction != null; }
 
     public void draw() {
-        RogueGame.batch.draw(textureRegion, x, y + RogueGame.STAGE_Y);
+        RogueGame.batch.draw(textureRegion, x, y + RogueGame.ROOM_Y);
     }
 
     @Override

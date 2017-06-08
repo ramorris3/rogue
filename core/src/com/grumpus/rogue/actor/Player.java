@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.grumpus.rogue.action.AttackAction;
 import com.grumpus.rogue.action.OpenDoorAction;
 import com.grumpus.rogue.action.WalkAction;
+import com.grumpus.rogue.dungeon.Doorway;
+import com.grumpus.rogue.dungeon.Dungeon;
 import com.grumpus.rogue.dungeon.Room;
 
 public class Player extends Actor {
@@ -32,7 +34,7 @@ public class Player extends Actor {
      * Input processing function for handling player input.  Gets the player action's nextAction
      * based on input.
      */
-    public void processInput(Room room) {
+    public void processInput(Dungeon dungeon) {
         // player already has an action waiting for execution
         if (hasNextAction()) return;
 
@@ -59,19 +61,30 @@ public class Player extends Actor {
         }
 
         // get target tile position
-        int tx = getTileX() + xDir;
-        int ty = getTileY() + yDir;
+        int currX = getTileX();
+        int currY = getTileY();
+        int tarX = currX + xDir;
+        int tarY = currY + yDir;
+
+        // check if trying to move outside the screen, and standing on a doorway
+        if (dungeon.room.isLayerAt("doorway", currX, currY)
+                && dungeon.room.isOutOfBounds(tarX, tarY)) {
+            // get the doorway instance and perform room transition
+            Doorway dway = (Doorway)dungeon.room.getTextureRegion("doorway", currX, currY);
+            dungeon.changeRooms(dway);
+            return;
+        }
 
         // check if blocked
-        if (room.isBlocked(tx, ty)) {
+        if (dungeon.room.isBlockedForPlayer(tarX, tarY)) {
             // check for monster
-            Monster m = room.getMonsterAt(tx, ty);
+            Monster m = dungeon.room.getMonsterAt(tarX, tarY);
             if (m != null) {
-                setNextAction(new AttackAction(this, m, room,
+                setNextAction(new AttackAction(this, m, dungeon.room,
                         Color.WHITE, Color.YELLOW));
-            } else if (room.isLayerAt("door", tx, ty)) {
-                // check for door
-                setNextAction(new OpenDoorAction(room, tx, ty));
+            // check for door
+            } else if (dungeon.room.isLayerAt("door", tarX, tarY)) {
+                setNextAction(new OpenDoorAction(dungeon.room, tarX, tarY));
             }
             // otherwise, it's solid, don't do anything
         } else {

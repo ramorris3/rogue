@@ -31,12 +31,12 @@ public class WanderAI extends AI {
             tx = monster.getTileX() + dx;
             ty = monster.getTileY() + dy;
 
-            if (!room.isBlocked(tx, ty)) {
+            if (!room.isBlockedForMonster(tx, ty)) {
                 return new WalkAction(monster, dx, dy);
             }
 
             attempts++;
-        } while (!room.isBlocked(tx, ty) && attempts < 20);
+        } while (!room.isBlockedForMonster(tx, ty) && attempts < 20);
 
         // after a certain number of unsuccessful attempts, just "walk" in place.
         return new WalkAction(monster, 0, 0);

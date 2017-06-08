@@ -42,7 +42,7 @@ public class TextEffect implements Effect {
 
         // draw
         float x = actor.getCenterX() - (layout.width / 2);
-        float y = actor.getY() + oy + RogueGame.STAGE_Y;
+        float y = actor.getY() + oy + RogueGame.ROOM_Y;
 
         // draw bg letters (black)
         for (int i = -1; i <= 1; i++) {

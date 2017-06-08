@@ -10,7 +10,7 @@ import com.grumpus.rogue.actor.Actor;
  * A number or message that floats up above an actor for a moment.
  * "-5", "Crit!", "Miss!", etc.
  */
-public class AttackMessageEffect implements Effect {
+public class TextEffect implements Effect {
 
     private Actor actor;
 
@@ -21,7 +21,7 @@ public class AttackMessageEffect implements Effect {
     private float oyMax;
     private float timeLeft;
 
-    public AttackMessageEffect(Actor actor, String message, Color color) {
+    public TextEffect(Actor actor, String message, Color color) {
         this.actor = actor;
         layout = new GlyphLayout(RogueGame.font, message,
                 color, 0, Align.bottomLeft, false);
@@ -42,7 +42,7 @@ public class AttackMessageEffect implements Effect {
 
         // draw
         float x = actor.getCenterX() - (layout.width / 2);
-        float y = actor.getY() + oy + RogueGame.STAGE_Y;
+        float y = actor.getY() + oy + RogueGame.ROOM_Y;
 
         // draw bg letters (black)
         for (int i = -1; i <= 1; i++) {

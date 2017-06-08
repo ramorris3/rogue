@@ -5,19 +5,17 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.grumpus.rogue.RogueGame;
 import com.grumpus.rogue.actor.Player;
-import com.grumpus.rogue.stage.Stage;
+import com.grumpus.rogue.dungeon.Dungeon;
 
 public class PlayScreen extends ScreenAdapter {
 
     private OrthographicCamera camera;
     private FitViewport viewport;
 
-    private Stage stage;
+    public Dungeon dungeon;
     private Player player;
 
     public PlayScreen() {
@@ -35,11 +33,8 @@ public class PlayScreen extends ScreenAdapter {
                         RogueGame.TILE_SIZE, RogueGame.TILE_SIZE),
                 5 * RogueGame.TILE_SIZE, RogueGame.TILE_SIZE);
 
-        // load map and stage
-        TmxMapLoader mapLoader = new TmxMapLoader();
-        // TODO: load map dynamically
-        TiledMap map = mapLoader.load("maps/test.tmx");
-        stage = new Stage(map, player);
+        // TODO: remove this dungeon generation test
+        dungeon = new Dungeon("foo", player);
     }
 
     /**
@@ -58,13 +53,13 @@ public class PlayScreen extends ScreenAdapter {
 
         // update player if not dead
         if (!player.isDead()) {
-            player.processInput(stage);
+            player.processInput(dungeon);
             if (player.hasNextAction()) {
                 player.getNextAction().execute();
                 player.setNextAction(null);
 
                 // update monsters only if player has taken a turn
-                stage.updateMonsters();
+                dungeon.room.updateMonsters();
             }
         }
 
@@ -74,8 +69,8 @@ public class PlayScreen extends ScreenAdapter {
         RogueGame.messageLog.draw();
 
         // draw level and monsters
-        stage.drawLevel();
-        stage.drawMonsters();
+        dungeon.room.drawLevel();
+        dungeon.room.drawMonsters();
 
         // draw player if not dead
         if (!player.isDead()) {
@@ -83,7 +78,7 @@ public class PlayScreen extends ScreenAdapter {
         }
 
         // draw effects
-        stage.drawEffects(delta);
+        dungeon.room.drawEffects(delta);
 
         // draw UI
         RogueGame.font.draw(RogueGame.batch,

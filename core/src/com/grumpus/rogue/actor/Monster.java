@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.grumpus.rogue.ai.AI;
 import com.grumpus.rogue.ai.WanderAI;
 import com.grumpus.rogue.data.MonsterData;
-import com.grumpus.rogue.stage.Stage;
+import com.grumpus.rogue.dungeon.Room;
 
 public class Monster extends Actor {
 
@@ -17,12 +17,12 @@ public class Monster extends Actor {
     }
 
     @Override
-    public void die(Stage stage) {
+    public void die(Room room) {
         // TODO: add death animation here or something.
-        stage.removeMonster(this);
+        room.removeMonster(this);
     }
 
-    public void processAI(Stage stage) {
-        setNextAction(ai.getNextAction(stage));
+    public void processAI(Room room) {
+        setNextAction(ai.getNextAction(room));
     }
 }

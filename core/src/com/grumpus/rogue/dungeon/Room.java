@@ -1,4 +1,4 @@
-package com.grumpus.rogue.stage;
+package com.grumpus.rogue.dungeon;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -6,7 +6,9 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
+import com.badlogic.gdx.math.Vector2;
 import com.grumpus.rogue.RogueGame;
 import com.grumpus.rogue.actor.Actor;
 import com.grumpus.rogue.actor.Monster;
@@ -14,6 +16,7 @@ import com.grumpus.rogue.actor.Player;
 import com.grumpus.rogue.data.MonsterData;
 import com.grumpus.rogue.data.DataLoader;
 import com.grumpus.rogue.effect.Effect;
+import com.grumpus.rogue.util.TileGraphics;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,7 +26,7 @@ import java.util.LinkedHashMap;
  * Represents a level with its interactive geometry.
  * Includes walls, doors, etc., but not monsters.
  */
-public class Stage {
+public class Room {
 
     private final String TAG = this.getClass().getSimpleName();
 
@@ -36,7 +39,20 @@ public class Stage {
 
     private ArrayList<Effect> effects;
 
-    public Stage(TiledMap map, Player player) {
+    public Room(String filename, Player player) {
+        layers = new LinkedHashMap<>();
+        monsters = new ArrayList<>();
+        effects = new ArrayList<>();
+        this.player = player;
+
+        // load map from filename
+        TiledMap map = new TmxMapLoader().load(filename);
+        loadTiles(map);
+        loadMonsters(map, player);
+    }
+
+    // TODO: phase this constructor out?
+    public Room(TiledMap map, Player player) {
         layers = new LinkedHashMap<>();
         monsters = new ArrayList<>();
         effects = new ArrayList<>();
@@ -46,8 +62,8 @@ public class Stage {
     }
 
     /**
-     * Generates the stage's level geometry from a {@link TiledMap}.
-     * The level is loaded into {@link Stage#layers}.
+     * Generates the dungeon's level geometry from a {@link TiledMap}.
+     * The level is loaded into {@link Room#layers}.
      * @param map The map to load from.
      */
     private void loadTiles(TiledMap map) {
@@ -56,7 +72,11 @@ public class Stage {
         width = props.get("width", Integer.class);
         height = props.get("height", Integer.class);
 
-        // load map tile layers into stage
+        // add empty "doorway" layer, initialized by dungeon generation code, and
+        // used to handle transitions between rooms
+        layers.put("doorway", new TextureRegion[width][height]);
+
+        // load map tile layers into dungeon
         for (MapLayer mapLayer : map.getLayers()) {
             try {
                 TiledMapTileLayer tmxLayer = (TiledMapTileLayer)mapLayer;
@@ -75,7 +95,7 @@ public class Stage {
                 // create the layer
                 layers.put(tmxLayer.getName(), layer);
             } catch (ClassCastException e) {
-                // ignore object layers, we only care about tile layers for stage geometry
+                // ignore object layers, we only care about tile layers for dungeon geometry
                 Gdx.app.debug(TAG, "Ignoring \"" + mapLayer.getName() + "\" layer because it's not a tile layer.");
             }
         }
@@ -83,7 +103,7 @@ public class Stage {
 
     /**
      * Generates the player and monsters from a {@link TiledMap}.
-     * The monsters are loaded into {@link Stage#monsters}.
+     * The monsters are loaded into {@link Room#monsters}.
      * @param map The map to load from.
      */
     private void loadMonsters(TiledMap map, Player player) {
@@ -165,16 +185,60 @@ public class Stage {
         return null;
     }
 
+    /** Removes a wall and adds a doorway at one of four positions. */
+    public void carveDoorway(Doorway.Positions position, Room toRoom) {
+        try {
+            // get the tile coords of the new doorway
+            Vector2 tilePos = Doorway.entryPoints.get(position);
+            int tx = (int)tilePos.x;
+            int ty = (int)tilePos.y;
+
+            // get the solid, door, and doorway layers
+            TextureRegion[][] solidLayer = layers.get("solid");
+            TextureRegion[][] doorwayLayer = layers.get("doorway");
+
+            // remove solid tile, create door and doorway tiles
+            solidLayer[tx][ty] = null;
+            doorwayLayer[tx][ty] = new Doorway(TileGraphics.DOORWAY, position, toRoom);
+        } catch (NullPointerException e) {
+            Gdx.app.log(TAG, "WARNING! This room is missing a doorway or solid layer!");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Gdx.app.log(TAG, "WARNING! Can't carve a door out of bounds.");
+        }
+    }
+
     /**
      * Check if a tile is blocked by level geometry (doors, solids, etc.) or by
-     * actors (player or monsters).
+     * actors (player or monsters).  NOTE: Opened doorways are treated as solid
+     * so that enemies won't walk through them.  Room transitions are a special
+     * case only relevant to player.
      * @return True if blocked, false if clear.
      */
-    public boolean isBlocked(int tx, int ty) {
+    public boolean isBlockedForPlayer(int tx, int ty) {
         return isLayerAt("door", tx, ty)
                 || isLayerAt("solid", tx, ty)
                 || isPlayerAt(tx, ty)
                 || getMonsterAt(tx, ty) != null;
+    }
+
+    /**
+     * Check if a tile is blocked by level geometry (doors, solids, etc.) or by
+     * actors (player or monsters).  NOTE: Opened doorways are treated as solid
+     * so that enemies won't walk through them.  Room transitions are a special
+     * case only relevant to player.
+     * @return True if blocked or if there's a doorway there, false if clear.
+     */
+    public boolean isBlockedForMonster(int tx, int ty) {
+        return isBlockedForPlayer(tx, ty) || isLayerAt("doorway", tx, ty);
+    }
+
+    /**
+     * Check if a tile position is outside the room's tile grid.  I'm pretty
+     * sure this is exclusively being used by room transition code, which is
+     * pretty hacky... but it should be fine for now.
+     */
+    public boolean isOutOfBounds(int tx, int ty) {
+        return tx < 0 || tx >= width || ty < 0 || ty >= height;
     }
 
     public void updateMonsters() {
@@ -200,7 +264,7 @@ public class Stage {
                     if (tr != null) {
                         RogueGame.batch.draw(layer[x][y],
                                 x * RogueGame.TILE_SIZE,
-                                y * RogueGame.TILE_SIZE + RogueGame.STAGE_Y);
+                                y * RogueGame.TILE_SIZE + RogueGame.ROOM_Y);
                     }
                 }
             }

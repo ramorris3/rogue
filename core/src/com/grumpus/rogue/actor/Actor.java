@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.grumpus.rogue.RogueGame;
 import com.grumpus.rogue.action.Action;
-import com.grumpus.rogue.stage.Stage;
+import com.grumpus.rogue.dungeon.Room;
 
 public class Actor {
 
@@ -43,6 +43,9 @@ public class Actor {
     public int getX() { return x; }
     public int getY() { return y; }
 
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
+
     public int getCenterX() {
         return x + (RogueGame.TILE_SIZE / 2);
     }
@@ -74,7 +77,7 @@ public class Actor {
     }
 
     /** Both player and monster classes must override this method */
-    public void die(Stage stage) {
+    public void die(Room room) {
         Gdx.app.debug(this.getClass().getSimpleName(), "Die function not overridden.");
     }
 
@@ -89,7 +92,7 @@ public class Actor {
     public boolean hasNextAction() { return nextAction != null; }
 
     public void draw() {
-        RogueGame.batch.draw(textureRegion, x, y + RogueGame.STAGE_Y);
+        RogueGame.batch.draw(textureRegion, x, y + RogueGame.ROOM_Y);
     }
 
     @Override

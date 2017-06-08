@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.google.gson.Gson;
+import com.grumpus.rogue.dungeon.Dungeon;
 import com.grumpus.rogue.screen.PlayScreen;
 import com.grumpus.rogue.ui.MessageLog;
 
@@ -14,10 +15,14 @@ public class RogueGame extends Game {
     // ui constants
     public static final int TILE_SIZE = 16;
     public static final int LOG_HEIGHT = 80;
-    public static final int STAGE_Y = LOG_HEIGHT;
-    public static final int VIEW_WIDTH = 320;
-    public static final int VIEW_HEIGHT = 240 + TILE_SIZE + LOG_HEIGHT;
-    public static final int HUD_Y = VIEW_HEIGHT - 5;
+    public static final int ROOM_Y = LOG_HEIGHT;
+	public static final int ROOM_WIDTH = 336;
+	public static final int ROOM_TILE_WIDTH = ROOM_WIDTH / TILE_SIZE;
+	public static final int ROOM_HEIGHT = 240;
+	public static final int ROOM_TILE_HEIGHT = ROOM_HEIGHT / TILE_SIZE;
+	public static final int VIEW_WIDTH = ROOM_WIDTH;
+	public static final int VIEW_HEIGHT = ROOM_HEIGHT + TILE_SIZE + LOG_HEIGHT;
+	public static final int HUD_Y = VIEW_HEIGHT - 5;
 
 
 	public static SpriteBatch batch;

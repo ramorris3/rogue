@@ -6,7 +6,7 @@ import com.grumpus.rogue.action.AttackAction;
 import com.grumpus.rogue.actor.Monster;
 import com.grumpus.rogue.actor.Player;
 import com.grumpus.rogue.action.WalkAction;
-import com.grumpus.rogue.stage.Stage;
+import com.grumpus.rogue.dungeon.Room;
 
 public class WanderAI extends AI {
 
@@ -15,11 +15,11 @@ public class WanderAI extends AI {
     }
 
     @Override
-    public Action getNextAction(Stage stage) {
+    public Action getNextAction(Room room) {
 
         // if player is next to this monster, attack player
         if (monster.isNextTo(player)) {
-            return new AttackAction(monster, player, stage);
+            return new AttackAction(monster, player, room);
         }
 
         // randomly choose a direction to go in
@@ -31,12 +31,12 @@ public class WanderAI extends AI {
             tx = monster.getTileX() + dx;
             ty = monster.getTileY() + dy;
 
-            if (!stage.isBlocked(tx, ty)) {
+            if (!room.isBlockedForMonster(tx, ty)) {
                 return new WalkAction(monster, dx, dy);
             }
 
             attempts++;
-        } while (!stage.isBlocked(tx, ty) && attempts < 20);
+        } while (!room.isBlockedForMonster(tx, ty) && attempts < 20);
 
         // after a certain number of unsuccessful attempts, just "walk" in place.
         return new WalkAction(monster, 0, 0);

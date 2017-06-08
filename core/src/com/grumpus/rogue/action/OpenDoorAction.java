@@ -1,17 +1,17 @@
 package com.grumpus.rogue.action;
 
-import com.grumpus.rogue.stage.Stage;
+import com.grumpus.rogue.dungeon.Room;
 import com.grumpus.rogue.util.TileGraphics;
 
 public class OpenDoorAction extends Action {
 
-    private Stage stage;
+    private Room room;
     private int tx;
     private int ty;
 
-    public OpenDoorAction(Stage stage, int doorTileX, int doorTileY) {
+    public OpenDoorAction(Room room, int doorTileX, int doorTileY) {
         super(null);
-        this.stage = stage;
+        this.room = room;
         tx = doorTileX;
         ty = doorTileY;
     }
@@ -19,10 +19,10 @@ public class OpenDoorAction extends Action {
     @Override
     public void execute() {
         // delete door from door layer at tile position (tx, ty)
-        stage.setTextureRegion("door", tx, ty, null);
+        room.setTextureRegion("door", tx, ty, null);
 
         // set bg tile at (tx, ty) to open door texture region
-        stage.setTextureRegion("background", tx, ty, TileGraphics.OPEN_DOOR);
+        room.setTextureRegion("background", tx, ty, TileGraphics.OPEN_DOOR);
 
     }
 

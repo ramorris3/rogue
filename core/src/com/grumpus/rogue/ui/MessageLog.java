@@ -2,9 +2,7 @@ package com.grumpus.rogue.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.utils.Align;
 import com.grumpus.rogue.RogueGame;
 
@@ -15,13 +13,9 @@ import com.grumpus.rogue.RogueGame;
 public class MessageLog {
 
     private GlyphLayout[] messageLayouts;
-    private NinePatch border;
 
     public MessageLog() {
-        messageLayouts = new GlyphLayout[5]; // only save the last few messageLayouts
-        border = new NinePatch(
-                new Texture("img/ui/border.png"),
-                16, 16, 16, 16);
+        clear();
     }
 
     /** Add a message to the message log. */
@@ -47,7 +41,8 @@ public class MessageLog {
     /** Most recent messageLayouts are drawn first, going up */
     public void draw() {
         // draw nine-patch border
-        border.draw(RogueGame.batch, 0, 0, RogueGame.VIEW_WIDTH, 80);
+        RogueGame.border.draw(RogueGame.batch,
+                0, 0, RogueGame.VIEW_WIDTH, 80);
 
         // draw messageLayouts
         int x = RogueGame.TILE_SIZE / 2;
@@ -58,6 +53,12 @@ public class MessageLog {
                 y += layout.height * 2;
             }
         }
+    }
+
+    /** Clear out all messages in the log */
+    public void clear() {
+        // only save the last few message layouts
+        messageLayouts = new GlyphLayout[5];
     }
 
 }

@@ -11,9 +11,9 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		// set screen config
-		config.width = 1008;
-		config.height = 1008;
-//		config.fullscreen = true;
+		config.width = 1260;
+		config.height = 1260;
+		config.fullscreen = true;
 
 		Gdx.app = new LwjglApplication(new RogueGame(), config);
         Gdx.app.setLogLevel(Application.LOG_DEBUG);

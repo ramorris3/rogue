@@ -1,6 +1,7 @@
 package com.grumpus.rogue.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,13 +13,17 @@ import com.grumpus.rogue.dungeon.Dungeon;
 
 public class PlayScreen extends ScreenAdapter {
 
+    private RogueGame game;
+
     private OrthographicCamera camera;
     private FitViewport viewport;
 
     public Dungeon dungeon;
     private Player player;
 
-    public PlayScreen() {
+    public PlayScreen(RogueGame game) {
+        this.game = game;
+
         // load camera and viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(RogueGame.VIEW_WIDTH, RogueGame.VIEW_HEIGHT, camera);
@@ -43,6 +48,11 @@ public class PlayScreen extends ScreenAdapter {
      */
     @Override
     public void render(float delta) {
+        // check for pause keypress
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            game.goToScreen(new PauseScreen(game, this), true);
+        }
+
         // clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -61,6 +71,9 @@ public class PlayScreen extends ScreenAdapter {
                 // update monsters only if player has taken a turn
                 dungeon.room.updateMonsters();
             }
+        } else {
+            // TODO: player animation instead of switching screens right away
+            game.setScreen(new GameOverScreen(game));
         }
 
         RogueGame.batch.begin();

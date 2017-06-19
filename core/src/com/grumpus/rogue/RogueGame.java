@@ -2,12 +2,13 @@ package com.grumpus.rogue;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.google.gson.Gson;
-import com.grumpus.rogue.dungeon.Dungeon;
-import com.grumpus.rogue.screen.PlayScreen;
+import com.grumpus.rogue.screen.TitleScreen;
 import com.grumpus.rogue.ui.MessageLog;
 
 public class RogueGame extends Game {
@@ -29,6 +30,7 @@ public class RogueGame extends Game {
 	public static BitmapFont font;
 	public static Texture tileset;
 	public static MessageLog messageLog;
+	public static NinePatch border;
 
 	public static Gson gson;
 
@@ -46,11 +48,21 @@ public class RogueGame extends Game {
 
         messageLog = new MessageLog();
 
+        border = new NinePatch(new Texture("img/ui/border.png"),
+                16, 16, 16, 16);
+
         gson = new Gson();
 
 		// start game screen
-        setScreen(new PlayScreen());
+        setScreen(new TitleScreen(this));
 	}
+
+	public void goToScreen(ScreenAdapter screen, Boolean saveMessages) {
+	    if (!saveMessages) {
+            messageLog.clear();
+        }
+	    setScreen(screen);
+    }
 
 	@Override
 	public void dispose () {
